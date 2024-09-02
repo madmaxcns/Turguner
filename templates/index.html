@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasta Girişi</title>
+    <style>
+        /* Stil detayları */
+        body {
+            background-color: #00B7EB;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        label,
+        input,
+        textarea {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"],
+        textarea {
+            width: calc(100% - 22px);
+            padding: 10px;
+        }
+
+        input[type="submit"] {
+            font-size: 1.2em;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+    <script src="/static/js/main.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Hasta Bilgisi</h2>
+
+        <form id="hastaForm">
+            <label for="hastaNo">Hasta No:</label>
+            <input type="text" id="hastaNo" name="hastaNo" required>
+
+            <label for="paragraf">Paragraf:</label>
+            <textarea id="paragraf" name="paragraf" required></textarea>
+
+            <input type="submit" value="Teste Geç">
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('hastaForm').onsubmit = function (event) {
+            event.preventDefault();
+
+            var hastaNo = document.getElementById('hastaNo').value;
+            var paragraf = document.getElementById('paragraf').value;
+
+            // Hasta numarasını ve paragrafı localStorage'a kaydedin
+            localStorage.setItem('hastaNo', hastaNo);
+            localStorage.setItem('paragraf', paragraf);
+
+            // Hasta numarasını ve paragrafı sunucuya gönderin
+            fetch('/hasta_metin/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    hasta_no: hastaNo,
+                    paragraf: paragraf
+                })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Success:', data);
+                    // Sunucu tarafından başarılı bir yanıt aldıktan sonra sorular sayfasına yönlendirin
+                    window.location.href = '/questionnaire';
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    alert('Bir hata oluştu, lütfen daha sonra tekrar deneyin.');
+                });
+        };
+    </script>
+</body>
+
+</html>
